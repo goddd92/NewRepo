@@ -1,0 +1,35 @@
+using System;
+using System.Net;
+using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Text.RegularExpressions;
+
+namespace CollectWords1
+{
+    class Program
+    {
+        const string HTML_TAG_PATTERN = "<.*?>";
+        static void Main(string[] args)
+        {
+            List<string> words = new List<string> { };
+            var text = new WebClient().DownloadString("http://book-online.com.ua/read.php?book=9628");
+            byte[] bytes = Encoding.Default.GetBytes(text);
+            text = Encoding.UTF8.GetString(bytes);
+
+            text = Regex.Replace(text, HTML_TAG_PATTERN, string.Empty);
+
+            string[] separators = new string[] {".", ",", "!", "\'", " ", "\'s", "" };
+
+            foreach (string word in text.Split(separators, StringSplitOptions.RemoveEmptyEntries))
+                words.Add(word);
+
+            System.IO.File.WriteAllText("C:\\Users\\koshkowskyii\\Documents\\TestCopy.txt", text);
+            System.IO.File.WriteAllLines("C:\\Users\\koshkowskyii\\Documents\\List.txt", words);
+
+        }
+
+    }
+}
