@@ -15,6 +15,9 @@ namespace CollectWords1
             List<string> words = new List<string> { };
             var text = new WebClient().DownloadString("http://book-online.com.ua/read.php?book=9628");
 
+            byte[] bytes = Encoding.Default.GetBytes(text);
+            text = Encoding.UTF8.GetString(bytes);
+
             bool tagOpened = false;
             var sb = new StringBuilder();
             foreach (var c in text)
@@ -35,17 +38,36 @@ namespace CollectWords1
             }
             text = sb.ToString();
 
-            byte[] bytes = Encoding.Default.GetBytes(text);
-            text = Encoding.UTF8.GetString(bytes);
-
-            string[] separators = new string[] {".", ",", "!", "\'", " ", "\'s", "" };
+            string[] separators = new string[] {".", ",", "!", "\'", " ", "\'s", "", "?", "\n", "-", ":" };
 
             foreach (string word in text.Split(separators, StringSplitOptions.RemoveEmptyEntries))
                 words.Add(word);
 
+            var dictionary1 = new Dictionary<string, int>();
+            var dictionary2 = new Dictionary<string, int>();
+            foreach (string word in words)
+            {
+                if (dictionary1.ContainsKey(word))
+                {
+                    dictionary1[word]++;
+                }
+                else
+                {
+                    dictionary1.Add(word, 1);
+                }
+            }
+
+            foreach (var item in dictionary1)
+            {
+                if (item.Value > 5)
+                    dictionary2.Add(item.Key, item.Value);
+            }
+            words = dictionary2.Select(kvp => kvp.Key + " " + kvp.Value + " \n").ToList();
+
             System.IO.File.WriteAllText("C:\\Users\\koshkowskyii\\Documents\\TestCopy.txt", text);
             System.IO.File.WriteAllLines("C:\\Users\\koshkowskyii\\Documents\\List.txt", words);
-        }
 
+
+        }
     }
 }
